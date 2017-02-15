@@ -67,12 +67,12 @@
       var app = {
         host: location.host,
         styles: {
-          'streets': 'http://basemaps.arcgis.com/arcgis/rest/services/World_Basemap/VectorTileServer',
-          'streets-relief': 'http://www.arcgis.com/sharing/rest/content/items/2e063e709e3446459f8538ed6743f879/resources/styles/root.json',
-          'streets-mobile': 'http://www.arcgis.com/sharing/rest/content/items/dcbbba0edf094eaa81af19298b9c6247/resources/styles/root.json',
-          'streets-night': 'http://www.arcgis.com/sharing/rest/content/items/bf79e422e9454565ae0cbe9553cf6471/resources/styles/root.json',
-          'canvas-light': 'http://www.arcgis.com/sharing/rest/content/items/0e02e6f86d02455091796eaae811d9b5/resources/styles/root.json',
-          'canvas-dark': 'http://www.arcgis.com/sharing/rest/content/items/850db44b9eb845d3bd42b19e8aa7a024/resources/styles/root.json'
+          'streets': 'https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap/VectorTileServer',
+          'streets-relief': 'https://www.arcgis.com/sharing/rest/content/items/2e063e709e3446459f8538ed6743f879/resources/styles/root.json',
+          'streets-mobile': 'https://www.arcgis.com/sharing/rest/content/items/dcbbba0edf094eaa81af19298b9c6247/resources/styles/root.json',
+          'streets-night': 'https://www.arcgis.com/sharing/rest/content/items/bf79e422e9454565ae0cbe9553cf6471/resources/styles/root.json',
+          'canvas-light': 'https://www.arcgis.com/sharing/rest/content/items/0e02e6f86d02455091796eaae811d9b5/resources/styles/root.json',
+          'canvas-dark': 'https://www.arcgis.com/sharing/rest/content/items/850db44b9eb845d3bd42b19e8aa7a024/resources/styles/root.json'
         },
         selected: 'streets'
       };
@@ -93,18 +93,18 @@
       view.ui.add(compass,"top-left");
 
       var tileLyr = new VectorTileLayer({
-        url: "http://basemaps.arcgis.com/arcgis/rest/services/World_Basemap/VectorTileServer"
+        url: "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap/VectorTileServer"
       });
 
-      var hillshade = new TileLayer("http://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer", {maxScale: 18055.954822, visible: false});
+      var hillshade = new TileLayer("https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer", {maxScale: 18055.954822, visible: false});
       map.add(hillshade);
       map.add(tileLyr);
 
       
     
       // add CORS enabled server
-      esriConfig.request.corsEnabledServers.push('http://vectormaps.esri.com')
-      esriConfig.request.corsEnabledServers.push('http://basemaps.arcgis.com')
+      esriConfig.request.corsEnabledServers.push('https://vectormaps.esri.com')
+      esriConfig.request.corsEnabledServers.push('https://basemaps.arcgis.com')
 
       createStyleUI();
 
