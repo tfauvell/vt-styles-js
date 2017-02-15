@@ -1,0 +1,163 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
+  <title>Vector Tile Styles</title>
+  <link rel="stylesheet" href="http://js.arcgis.com/4.2/esri/css/main.css">
+  <style type="text/css">
+    html, body {
+      height: 100%; width: 100%;
+      margin: 0; padding: 0;
+    }
+    body{
+      background-color: #fff; overflow:hidden;
+      font-family: sans-serif;
+    }
+    #viewDiv{
+      height: 100%;
+      width: 100%;
+    }
+    #styles {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+    .style {
+      padding: 30px;
+      border: 2px solid #fff;
+      border-radius: 3px;
+      margin: 2px 0px;
+      box-shadow: 0px 0px 5px #555;
+      background: #eee;
+    }
+    .style:hover {
+      border: 2px solid #aaa;
+      cursor: pointer; 
+    }
+    .style.selected {
+      border: 2px solid #aaa;
+    }
+
+  </style>
+
+  <script src="http://js.arcgis.com/4.2/"></script>
+
+  <script>
+
+
+    require([
+      "esri/config",
+      "esri/Map",
+      "esri/views/MapView",
+      "esri/layers/VectorTileLayer",
+      "esri/layers/TileLayer",
+      "esri/widgets/Compass",
+      "dojo/on",
+      "dojo/query",
+      "dojo/dom",
+      "dojo/dom-construct",
+      "dojo/dom-class",
+      "dojo/dom-style",
+      "dojo/domReady!"
+    ], function (esriConfig, Map, MapView, VectorTileLayer, TileLayer, Compass, on, query, dom, domConstruct, domClass, domStyle) {
+
+      var host = location.href.replace(/\/[^/]+$/, "");
+      var app = {
+        host: location.host,
+        styles: {
+          'streets': 'http://basemaps.arcgis.com/arcgis/rest/services/World_Basemap/VectorTileServer',
+          'streets-relief': 'http://www.arcgis.com/sharing/rest/content/items/2e063e709e3446459f8538ed6743f879/resources/styles/root.json',
+          'streets-mobile': 'http://www.arcgis.com/sharing/rest/content/items/dcbbba0edf094eaa81af19298b9c6247/resources/styles/root.json',
+          'streets-night': 'http://www.arcgis.com/sharing/rest/content/items/bf79e422e9454565ae0cbe9553cf6471/resources/styles/root.json',
+          'canvas-light': 'http://www.arcgis.com/sharing/rest/content/items/0e02e6f86d02455091796eaae811d9b5/resources/styles/root.json',
+          'canvas-dark': 'http://www.arcgis.com/sharing/rest/content/items/850db44b9eb845d3bd42b19e8aa7a024/resources/styles/root.json'
+        },
+        selected: 'streets'
+      };
+
+      var map = new Map();
+      
+      var view = new MapView({
+        container:"viewDiv",
+        map: map,
+        center: [-100, 40],
+        zoom: 4
+      });
+      
+      var compass = new Compass({
+        view: view
+      });
+      
+      view.ui.add(compass,"top-left");
+
+      var tileLyr = new VectorTileLayer({
+        url: "http://basemaps.arcgis.com/arcgis/rest/services/World_Basemap/VectorTileServer"
+      });
+
+      var hillshade = new TileLayer("http://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer", {maxScale: 18055.954822, visible: false});
+      map.add(hillshade);
+      map.add(tileLyr);
+
+      
+    
+      // add CORS enabled server
+      esriConfig.request.corsEnabledServers.push('http://vectormaps.esri.com')
+      esriConfig.request.corsEnabledServers.push('http://basemaps.arcgis.com')
+
+      createStyleUI();
+
+      function createStyleUI () {
+        var container = document.getElementById('styles');
+        for (var style in app.styles) {
+          var div = domConstruct.create("div");
+
+          div.id = style;
+          div.title = style;
+          domStyle.set(div, {background: "url(./img/" + style + ".png) no-repeat -5px 0px"});
+          domClass.add(div, "style");
+
+          if (app.selected === style) {
+            domClass.add(div, "selected");
+          }
+
+          on(div, 'click', changeStyle);
+          container.appendChild(div);
+        }
+      }
+
+      function changeStyle (evt) {
+        var style = evt.target.id;
+        var url = app.styles[style];
+
+        if (url && app.selected !== style) {
+          app.selected = style;
+
+          if (style === 'streets-relief') {
+            setTimeout(function () {
+              hillshade.visible = true;
+            }, 500);
+            tileLyr.opacity = 0.75;
+          } else {
+            hillshade.visible = false;
+            tileLyr.opacity = 1;
+          }
+
+          // update map
+          //tileLyr.styleURL = url;
+          tileLyr.loadStyle(url);
+          // update URL
+          query(".style").removeClass("selected");
+          domClass.add(evt.target.id, "selected");
+        }
+      }
+    });
+
+  </script>
+</head>
+<body>
+<div id="viewDiv"></div>
+<div id="styles"></div>
+</body>
+</html>
